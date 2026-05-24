@@ -225,36 +225,49 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 
     <style type="text/css">
-        .bang-invitation-music-container {
-            position: fixed !important;
-            bottom: 30px !important;
-            right: 20px !important;
-            z-index: 999999 !important;
-            display: block !important;
-        }
+        /* 1. Mengunci halaman web agar tidak bisa geser-geser ke kanan (anti-bocor) */
+html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+}
 
-        .bang-invitation-music-toggle {
-            width: 50px !important;
-            height: 50px !important;
-            border-radius: 50% !important;
-            background-color: #bc9c74 !important;
-            color: #ffffff !important;
-            border: none !important;
-            cursor: pointer !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4) !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            outline: none !important;
-        }
+/* 2. Memaksa container melayang & ukurannya dibuat 0 biar gak memakan space halaman */
+.bang-invitation-music-container {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 20px !important;
+    z-index: 999999 !important;
+    display: block !important;
+    width: 0 !important;
+    height: 0 !important;
+}
 
-        .music-icon-emoji {
-            font-size: 22px !important;
-            line-height: 1 !important;
-            display: block !important;
-        }
+/* 3. Tombol melayang yang sesungguhnya */
+.bang-invitation-music-toggle {
+    position: absolute !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    background-color: #bc9c74 !important;
+    color: #ffffff !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+}
+
+.music-icon-emoji {
+    font-size: 22px !important;
+    line-height: 1 !important;
+    display: block !important;
+}
     </style>
 
     <script type="text/javascript">
