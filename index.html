@@ -302,52 +302,59 @@ document.addEventListener("DOMContentLoaded", function() {
         audio.volume = 1;
         var icon = toggleBtn.querySelector(".music-icon-2d");
         
-        // Template Ikon 2D Flat pakai SVG (Line Art)
         var iconPlay2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
         var iconMute2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
         
         function playAudio() {
             audio.muted = false;
-            audio.play()
-                .then(function() {
-                    if (icon) icon.innerHTML = iconPlay2D;
-                    toggleBtn.setAttribute("title", "Matikan Musik");
-                })
-                .catch(function(error) {
-                    console.log("Autoplay blocked");
-                });
+            
+            // Trik iOS: Aktifkan audio konteks sebelum play beneran
+            if (typeof audio.play === 'function') {
+                audio.play()
+                    .then(function() {
+                        if (icon) icon.innerHTML = iconPlay2D;
+                        toggleBtn.setAttribute("title", "Matikan Musik");
+                    })
+                    .catch(function(error) {
+                        console.log("iOS memblokir autoplay awal, menunggu klik user.");
+                    });
+            }
         }
         
         function pauseAudio() {
-            audio.muted = true;
+            audio.pause(); // Di iOS, pakai pause() jauh lebih aman daripada cuma di-mute
             if (icon) icon.innerHTML = iconMute2D;
             toggleBtn.setAttribute("title", "Putar Musik");
         }
         
-        var playPromise = audio.play();
-        if (playPromise !== undefined) {
-            playPromise.then(function() {
-                audio.muted = false;
-                if (icon) icon.innerHTML = iconPlay2D;
-            }).catch(function(error) {
-                // Autoplay blocked
-            });
-        }
-        
+        // JANGAN langsung panggil audio.play() di awal tanpa alasan demi keamanan Safari
+        audio.muted = true; 
+
+        // 1. Trigger saat tombol toggle di-klik
         toggleBtn.addEventListener("click", function(e) {
             e.stopPropagation();
-            if (audio.muted) {
+            if (audio.paused) {
                 playAudio();
             } else {
                 pauseAudio();
             }
         });
         
-        document.addEventListener("click", function() {
-            if (audio.muted || audio.paused) {
+        // 2. Trik Ampuh iOS: Pancing audio jalan lewat interaksi pertama di layar (touch/click)
+        var isiUndanganTapped = false;
+        function jembatanAudioiOS() {
+            if (!isiUndanganTapped) {
                 playAudio();
+                isiUndanganTapped = true;
+                // Langsung cabut listener biar gak nge-loop manggil fungsi tiap di-klik
+                document.removeEventListener("click", jembatanAudioiOS);
+                document.removeEventListener("touchstart", jembatanAudioiOS);
             }
-        }, { once: true });
+        }
+        
+        // Daftarkan event klik dan sentuhan layar (khusus user HP)
+        document.addEventListener("click", jembatanAudioiOS);
+        document.addEventListener("touchstart", jembatanAudioiOS);
     });
 </script>
 </div>
