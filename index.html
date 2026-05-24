@@ -234,7 +234,6 @@ document.addEventListener("DOMContentLoaded", function() {
         max-width: 100vw !important;
         position: relative;
     }
-
     .bang-invitation-music-wrapper {
         position: absolute !important;
         width: 0 !important;
@@ -243,7 +242,6 @@ document.addEventListener("DOMContentLoaded", function() {
         padding: 0 !important;
         overflow: hidden !important;
     }
-
     .bang-invitation-music-container {
         position: fixed !important;
         bottom: 30px !important;
@@ -253,7 +251,6 @@ document.addEventListener("DOMContentLoaded", function() {
         height: 50px !important;
         display: block !important;
     }
-
     .bang-invitation-music-toggle {
         width: 50px !important;
         height: 50px !important;
@@ -270,7 +267,6 @@ document.addEventListener("DOMContentLoaded", function() {
         margin: 0 !important;
         outline: none !important;
     }
-
     .music-icon-2d {
         width: 22px !important;
         height: 22px !important;
@@ -278,7 +274,6 @@ document.addEventListener("DOMContentLoaded", function() {
         align-items: center !important;
         justify-content: center !important;
     }
-
     .music-icon-2d svg {
         width: 100% !important;
         height: 100% !important;
@@ -287,65 +282,76 @@ document.addEventListener("DOMContentLoaded", function() {
 </style>
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        var audio = document.getElementById("bang_invitation_audio_5572");
-        var toggleBtn = document.getElementById("bang_invitation_audio_5572_toggle");
-        
-        if (!audio || !toggleBtn) return;
-        
-        audio.volume = 1;
-        var icon = toggleBtn.querySelector(".music-icon-2d");
-        
+    (function() {
+        var audio, toggleBtn, icon;
         var iconPlay2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
         var iconMute2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
-        
+
+        function initMusic() {
+            audio = document.getElementById("bang_invitation_audio_5572");
+            toggleBtn = document.getElementById("bang_invitation_audio_5572_toggle");
+            if (!audio || !toggleBtn) return;
+
+            audio.volume = 1;
+            icon = toggleBtn.querySelector(".music-icon-2d");
+
+            // Pasang event listener ke tombol pojok kanan bawah
+            toggleBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                if (audio.paused) {
+                    playAudio();
+                } else {
+                    pauseAudio();
+                }
+            });
+
+            // Pemicu interaksi global untuk menjinakkan iOS Safari & Android Chrome
+            document.addEventListener("click", triggerFirstPlay, true);
+            document.addEventListener("touchstart", triggerFirstPlay, true);
+            
+            // Coba jalanin langsung (siapa tahu desktop/android auto-lolos)
+            playAudio();
+        }
+
         function playAudio() {
+            if (!audio) return;
             audio.muted = false;
             audio.play()
                 .then(function() {
                     if (icon) icon.innerHTML = iconPlay2D;
-                    toggleBtn.setAttribute("title", "Matikan Musik");
+                    if (toggleBtn) toggleBtn.setAttribute("title", "Matikan Musik");
                 })
-                .catch(function(error) {
-                    console.log("Playback diblokir:", error);
+                .catch(function(e) {
+                    console.log("Autoplay ketahan proteksi browser.");
                 });
         }
-        
+
         function pauseAudio() {
+            if (!audio) return;
             audio.pause();
             if (icon) icon.innerHTML = iconMute2D;
-            toggleBtn.setAttribute("title", "Putar Musik");
+            if (toggleBtn) toggleBtn.setAttribute("title", "Putar Musik");
         }
-        
-        // 1. Jalankan manual lewat tombol musik pojok kanan bawah
-        toggleBtn.addEventListener("click", function(e) {
-            e.stopPropagation();
-            if (audio.paused) {
-                playAudio();
-            } else {
-                pauseAudio();
-            }
-        });
-        
-        // 2. TRIK KHUSUS IPHONE: Cari tombol "Buka Undangan" di halaman web
-        // Kita dengerin klik dari teks tombolnya langsung
-        document.addEventListener("click", function(e) {
-            // Mencari elemen yang berisi teks "Buka Undangan"
-            if (e.target && (e.target.textContent.trim() === "Buka Undangan" || e.target.closest('a, button')?.textContent.trim() === "Buka Undangan")) {
-                playAudio();
-            }
-        });
-        
-        // Jaga-jaga kalau user skip tombol Buka Undangan dan langsung nyoba scroll layar
-        function forcePlayOnInteraction() {
-            if (audio.paused) {
-                playAudio();
-            }
-            document.removeEventListener("click", forcePlayOnInteraction);
-            document.removeEventListener("touchstart", forcePlayOnInteraction);
+
+        function triggerFirstPlay(e) {
+            // Jika yang diklik adalah tombol mute itu sendiri, abaikan fungsi global ini
+            if (toggleBtn && toggleBtn.contains(e.target)) return;
+
+            playAudio();
+            
+            // Hancurkan listener global setelah ketrigger sekali biar gak boros memori
+            document.removeEventListener("click", triggerFirstPlay, true);
+            document.removeEventListener("touchstart", triggerFirstPlay, true);
         }
-        document.addEventListener("touchstart", forcePlayOnInteraction);
-    });
+
+        // Jalankan inisialisasi tanpa nunggu DOMContentLoaded penuh demi kestabilan iOS
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initMusic);
+        } else {
+            initMusic();
+        }
+    })();
 </script>
 </div>
 						</div>
