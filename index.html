@@ -212,74 +212,100 @@ document.addEventListener("DOMContentLoaded", function() {
 				</div>
 				<div class="elementor-element elementor-element-2ccbd02 elementor-widget elementor-widget-shortcode" data-id="2ccbd02" data-element_type="widget" data-e-type="widget" data-widget_type="shortcode.default">
 				<div class="elementor-widget-container">
-							<div class="elementor-shortcode"><div class="bang-invitation-music-container"><audio id="bang_invitation_audio_5572" loop muted autoplay style="display:none;"><source src="/wp-content/uploads/2026/05/Rizky-Febian-Feat.-Mahalini-Bermuara-Official-Lyric-Video.mp3" type="audio/mpeg">Peramban Anda tidak mendukung elemen audio.</audio><button id="bang_invitation_audio_5572_toggle" class="bang-invitation-music-toggle" aria-label="Toggle Music"><span class="music-icon-emoji">🔊</span></button></div>
-		<script type="text/javascript">
+
+	<div class="elementor-shortcode">
+    <div class="bang-invitation-music-container">
+        <audio id="bang_invitation_audio_5572" loop muted style="display:none;">
+            <source src="/wp-content/uploads/2026/05/Rizky-Febian-Feat.-Mahalini-Bermuara-Official-Lyric-Video.mp3" type="audio/mpeg">
+            Peramban Anda tidak mendukung elemen audio.
+        </audio>
+        <button id="bang_invitation_audio_5572_toggle" class="bang-invitation-music-toggle" aria-label="Toggle Music" title="Putar Musik">
+            <span class="music-icon-emoji">🔇</span>
+        </button>
+    </div>
+
+    <style type="text/css">
+        .bang-invitation-music-container {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 20px !important;
+            z-index: 999999 !important;
+            display: block !important;
+        }
+
+        .bang-invitation-music-toggle {
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50% !important;
+            background-color: #bc9c74 !important;
+            color: #ffffff !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4) !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            outline: none !important;
+        }
+
+        .music-icon-emoji {
+            font-size: 22px !important;
+            line-height: 1 !important;
+            display: block !important;
+        }
+    </style>
+
+    <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
             var audio = document.getElementById("bang_invitation_audio_5572");
             var toggleBtn = document.getElementById("bang_invitation_audio_5572_toggle");
-            var volumeLevel = 1;
             
-            // Set audio volume
-            audio.volume = volumeLevel;
+            if (!audio || !toggleBtn) return;
             
-            // Function to play audio
+            audio.volume = 1;
+            var icon = toggleBtn.querySelector("span");
+            
             function playAudio() {
                 audio.muted = false;
                 audio.play()
                     .then(function() {
-                        if (toggleBtn) {
-                            // GANTI DI SINI: Ubah teks span jadi emoji suara nyala
-                            toggleBtn.querySelector("span").innerText = "🔊";
-                            toggleBtn.setAttribute("title", "Matikan Musik");
-                        }
+                        if (icon) icon.innerText = "🔊";
+                        toggleBtn.setAttribute("title", "Matikan Musik");
                     })
                     .catch(function(error) {
-                        console.log("Audio playback failed: ", error);
+                        console.log("Autoplay blocked, waiting for user interaction.");
                     });
             }
             
-            // Function to pause audio
             function pauseAudio() {
                 audio.muted = true;
-                if (toggleBtn) {
-                    // GANTI DI SINI: Ubah teks span jadi emoji senyap (mute)
-                    toggleBtn.querySelector("span").innerText = "🔇";
-                    toggleBtn.setAttribute("title", "Putar Musik");
-                }
+                if (icon) icon.innerText = "🔇";
+                toggleBtn.setAttribute("title", "Putar Musik");
             }
             
-            // Try autoplay if enabled
-            if (1) {
-                var playPromise = audio.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(function() {
-                        audio.muted = false;
-                        if (toggleBtn) {
-                            // GANTI DI SINI: Pastikan pas autoplay berhasil, emojinya nyala
-                            toggleBtn.querySelector("span").innerText = "🔊";
-                        }
-                    }).catch(function(error) {
-                        console.log("Autoplay prevented:", error);
-                    });
-                }
-            }
-            
-            // Toggle button click event if button exists
-            if (toggleBtn) {
-                toggleBtn.addEventListener("click", function(e) {
-                    e.stopPropagation(); // Tambahan dikit biar gak bentrok sama klik dokumen di bawah
-                    if (audio.muted) {
-                        playAudio();
-                    } else {
-                        pauseAudio();
-                    }
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    audio.muted = false;
+                    if (icon) icon.innerText = "🔊";
+                }).catch(function(error) {
+                    // Ketahan browser
                 });
             }
             
-            // Add interaction handler for Safari and other browsers that block autoplay
+            toggleBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                if (audio.muted) {
+                    playAudio();
+                } else {
+                    pauseAudio();
+                }
+            });
+            
             document.addEventListener("click", function() {
-                if (audio.paused && 1) {
+                if (audio.muted || audio.paused) {
                     playAudio();
                 }
             }, { once: true });
