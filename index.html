@@ -269,11 +269,6 @@ document.addEventListener("DOMContentLoaded", function() {
         padding: 0 !important;
         margin: 0 !important;
         outline: none !important;
-        transition: transform 0.2s ease;
-    }
-
-    .bang-invitation-music-toggle:active {
-        transform: scale(0.9);
     }
 
     .music-icon-2d {
@@ -312,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     toggleBtn.setAttribute("title", "Matikan Musik");
                 })
                 .catch(function(error) {
-                    console.log("Browser memblokir play otomatis:", error);
+                    console.log("Playback diblokir:", error);
                 });
         }
         
@@ -322,10 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
             toggleBtn.setAttribute("title", "Putar Musik");
         }
         
-        // Coba putar langsung pas loading (buat Desktop yang biasanya lolos)
-        playAudio();
-        
-        // Pemicu Klik Tombol Manual
+        // 1. Jalankan manual lewat tombol musik pojok kanan bawah
         toggleBtn.addEventListener("click", function(e) {
             e.stopPropagation();
             if (audio.paused) {
@@ -335,17 +327,23 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
         
-        // Pemicu Interaksi Global: Begitu layar disentuh/diklik pertama kali, lagu WAJIB jalan.
+        // 2. TRIK KHUSUS IPHONE: Cari tombol "Buka Undangan" di halaman web
+        // Kita dengerin klik dari teks tombolnya langsung
+        document.addEventListener("click", function(e) {
+            // Mencari elemen yang berisi teks "Buka Undangan"
+            if (e.target && (e.target.textContent.trim() === "Buka Undangan" || e.target.closest('a, button')?.textContent.trim() === "Buka Undangan")) {
+                playAudio();
+            }
+        });
+        
+        // Jaga-jaga kalau user skip tombol Buka Undangan dan langsung nyoba scroll layar
         function forcePlayOnInteraction() {
             if (audio.paused) {
                 playAudio();
             }
-            // Hapus listener agar tidak dijalankan terus-menerus setiap kali klik
             document.removeEventListener("click", forcePlayOnInteraction);
             document.removeEventListener("touchstart", forcePlayOnInteraction);
         }
-        
-        document.addEventListener("click", forcePlayOnInteraction);
         document.addEventListener("touchstart", forcePlayOnInteraction);
     });
 </script>
