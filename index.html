@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	<div class="elementor-shortcode">
     <div class="bang-invitation-music-wrapper">
     <div class="bang-invitation-music-container">
-        <audio id="bang_invitation_audio_5572" loop preload="auto" style="display:none;">
+        <audio id="bang_invitation_audio_5572" loop muted style="display:none;">
             <source src="/wp-content/uploads/2026/05/Rizky-Febian-Feat.-Mahalini-Bermuara-Official-Lyric-Video.mp3" type="audio/mpeg">
             Peramban Anda tidak mendukung elemen audio.
         </audio>
@@ -234,6 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
         max-width: 100vw !important;
         position: relative;
     }
+
     .bang-invitation-music-wrapper {
         position: absolute !important;
         width: 0 !important;
@@ -242,6 +243,7 @@ document.addEventListener("DOMContentLoaded", function() {
         padding: 0 !important;
         overflow: hidden !important;
     }
+
     .bang-invitation-music-container {
         position: fixed !important;
         bottom: 30px !important;
@@ -251,12 +253,13 @@ document.addEventListener("DOMContentLoaded", function() {
         height: 50px !important;
         display: block !important;
     }
+
     .bang-invitation-music-toggle {
         width: 50px !important;
         height: 50px !important;
         border-radius: 50% !important;
-        background-color: #bc9c74 !important;
-        color: #ffffff !important;
+        background-color: #bc9c74 !important; /* Warna emas/cokelat senada undangan */
+        color: #ffffff !important; /* Warna ikon jadi putih bersih */
         border: none !important;
         cursor: pointer !important;
         display: flex !important;
@@ -266,7 +269,14 @@ document.addEventListener("DOMContentLoaded", function() {
         padding: 0 !important;
         margin: 0 !important;
         outline: none !important;
+        transition: transform 0.2s ease;
     }
+
+    .bang-invitation-music-toggle:active {
+        transform: scale(0.9);
+    }
+
+    /* Mengatur ukuran dan ketebalan ikon 2D SVG */
     .music-icon-2d {
         width: 22px !important;
         height: 22px !important;
@@ -274,6 +284,7 @@ document.addEventListener("DOMContentLoaded", function() {
         align-items: center !important;
         justify-content: center !important;
     }
+
     .music-icon-2d svg {
         width: 100% !important;
         height: 100% !important;
@@ -282,76 +293,62 @@ document.addEventListener("DOMContentLoaded", function() {
 </style>
 
 <script type="text/javascript">
-    (function() {
-        var audio, toggleBtn, icon;
+    document.addEventListener("DOMContentLoaded", function() {
+        var audio = document.getElementById("bang_invitation_audio_5572");
+        var toggleBtn = document.getElementById("bang_invitation_audio_5572_toggle");
+        
+        if (!audio || !toggleBtn) return;
+        
+        audio.volume = 1;
+        var icon = toggleBtn.querySelector(".music-icon-2d");
+        
+        // Template Ikon 2D Flat pakai SVG (Line Art)
         var iconPlay2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
         var iconMute2D = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
-
-        function initMusic() {
-            audio = document.getElementById("bang_invitation_audio_5572");
-            toggleBtn = document.getElementById("bang_invitation_audio_5572_toggle");
-            if (!audio || !toggleBtn) return;
-
-            audio.volume = 1;
-            icon = toggleBtn.querySelector(".music-icon-2d");
-
-            // Pasang event listener ke tombol pojok kanan bawah
-            toggleBtn.addEventListener("click", function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                if (audio.paused) {
-                    playAudio();
-                } else {
-                    pauseAudio();
-                }
-            });
-
-            // Pemicu interaksi global untuk menjinakkan iOS Safari & Android Chrome
-            document.addEventListener("click", triggerFirstPlay, true);
-            document.addEventListener("touchstart", triggerFirstPlay, true);
-            
-            // Coba jalanin langsung (siapa tahu desktop/android auto-lolos)
-            playAudio();
-        }
-
+        
         function playAudio() {
-            if (!audio) return;
             audio.muted = false;
             audio.play()
                 .then(function() {
                     if (icon) icon.innerHTML = iconPlay2D;
-                    if (toggleBtn) toggleBtn.setAttribute("title", "Matikan Musik");
+                    toggleBtn.setAttribute("title", "Matikan Musik");
                 })
-                .catch(function(e) {
-                    console.log("Autoplay ketahan proteksi browser.");
+                .catch(function(error) {
+                    console.log("Autoplay blocked");
                 });
         }
-
+        
         function pauseAudio() {
-            if (!audio) return;
-            audio.pause();
+            audio.muted = true;
             if (icon) icon.innerHTML = iconMute2D;
-            if (toggleBtn) toggleBtn.setAttribute("title", "Putar Musik");
+            toggleBtn.setAttribute("title", "Putar Musik");
         }
-
-        function triggerFirstPlay(e) {
-            // Jika yang diklik adalah tombol mute itu sendiri, abaikan fungsi global ini
-            if (toggleBtn && toggleBtn.contains(e.target)) return;
-
-            playAudio();
-            
-            // Hancurkan listener global setelah ketrigger sekali biar gak boros memori
-            document.removeEventListener("click", triggerFirstPlay, true);
-            document.removeEventListener("touchstart", triggerFirstPlay, true);
+        
+        var playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(function() {
+                audio.muted = false;
+                if (icon) icon.innerHTML = iconPlay2D;
+            }).catch(function(error) {
+                // Autoplay blocked
+            });
         }
-
-        // Jalankan inisialisasi tanpa nunggu DOMContentLoaded penuh demi kestabilan iOS
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", initMusic);
-        } else {
-            initMusic();
-        }
-    })();
+        
+        toggleBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            if (audio.muted) {
+                playAudio();
+            } else {
+                pauseAudio();
+            }
+        });
+        
+        document.addEventListener("click", function() {
+            if (audio.muted || audio.paused) {
+                playAudio();
+            }
+        }, { once: true });
+    });
 </script>
 </div>
 						</div>
