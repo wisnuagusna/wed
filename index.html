@@ -189,7 +189,30 @@ document.addEventListener("DOMContentLoaded", function() {
 				</div>
 				<div class="elementor-element elementor-element-7fa216e elementor-widget elementor-widget-heading" data-id="7fa216e" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
 				<div class="elementor-widget-container">
-					<h2 class="elementor-heading-title elementor-size-default">Kepada Yth. <br>Bapak/Ibu/Saudara/i</h2>				</div>
+					<p style="font-family: 'Poppins', sans-serif; color: white; font-size: 14px; margin-bottom: 8px;">Kepada Yth.Bapak/Ibu/Saudara/i</p>
+<h3 id="nama-tamu" style="font-family: 'Poppins', sans-serif; color: white; font-size: 18px; font-weight: 600; margin-bottom: 8px;">nama</h3>
+<p style="font-family: 'Poppins', sans-serif; color: rgba(255, 255, 255, 0.65); font-size: 11px; font-style: italic; margin-bottom: 15px;">
+  Mohon maaf apabila ada kesalahan pada penulisan nama dan gelar
+</p>				
+<script>
+  // Fungsi untuk mengambil parameter dari URL
+  function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+  }
+
+  // Ambil data dari parameter '?to='
+  const namaTamu = getQueryParam('to');
+
+  // Kalau parameternya ada, ganti teks 'Bapak/Ibu/Saudara/i' dengan nama tamu
+  if (namaTamu) {
+      // ganti tanda plus (+) atau %20 jadi spasi biasa
+      const namaClean = decodeURIComponent(namaTamu).replace(/\+/g, ' ');
+      document.getElementById('nama-tamu').innerText = namaClean;
+  }
+</script>
+
+</div>
 				</div>
 				<div class="elementor-element elementor-element-8912d0d elementor-align-center elementor-invisible elementor-widget elementor-widget-button" data-id="8912d0d" data-element_type="widget" data-e-type="widget" id="tombol-buka" data-settings="{&quot;_animation&quot;:&quot;zoomIn&quot;}" data-widget_type="button.default">
 				<div class="elementor-widget-container">
