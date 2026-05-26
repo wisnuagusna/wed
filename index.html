@@ -719,23 +719,21 @@ document.addEventListener("DOMContentLoaded", function() {
 				</div>
 				<div class="elementor-element elementor-element-c6dd368 elementor-widget elementor-widget-html" data-id="c6dd368" data-element_type="widget" data-e-type="widget" data-widget_type="html.default">
 				<div class="elementor-widget-container">
-					<button class="btn-copy-dana" onclick="copyNomorDana()">
-  <span> Salin</span>
+<button class="btn-copy-dana" onclick="copyNomorDana('089542902917', this)">
+  <span>Salin</span>
 </button>
 
 <script>
-function copyNomorDana() {
-  // Ganti nomor di bawah ini sesuai dengan nomor Dana kamu
-  const nomorDana = "0895429029197"; 
-  
-  navigator.clipboard.writeText(nomorDana).then(() => {
-    // Efek teksnya berubah pas berhasil di-copy
-    const btn = document.querySelector('.btn-copy-dana span');
-    btn.innerText = "✅ Tersalin!";
+function copyNomorDana(nomor, element) {
+  // Langsung nyalin nomor yang dilempar dari tombol
+  navigator.clipboard.writeText(nomor).then(() => {
+    // Cari tag span di dalam tombol yang lagi diklik aja (pake 'element')
+    const btnSpan = element.querySelector('span');
+    btnSpan.innerText = "✓ Tersalin!";
     
-    // Balikin teksnya jadi 'Copy' lagi setelah 2 detik
+    // Balikin teksnya jadi 'Salin' lagi setelah 2 detik
     setTimeout(() => {
-      btn.innerText = "Salin";
+      btnSpan.innerText = "Salin";
     }, 2000);
   }).catch(err => {
     console.error('Gagal menyalin text: ', err);
@@ -792,23 +790,22 @@ function copyNomorDana() {
 				</div>
 				<div class="elementor-element elementor-element-ee15b41 elementor-widget elementor-widget-html" data-id="ee15b41" data-element_type="widget" data-e-type="widget" data-widget_type="html.default">
 				<div class="elementor-widget-container">
-					<button class="btn-copy-dana" onclick="copyNomorDana()">
-  <span> Salin</span>
+
+<button class="btn-copy-dana" onclick="copyNomorDana('082371690806', this)">
+  <span>Salin</span>
 </button>
 
 <script>
-function copyNomorDana() {
-  // Ganti nomor di bawah ini sesuai dengan nomor Dana kamu
-  const nomorDana = "082371690806"; 
-  
-  navigator.clipboard.writeText(nomorDana).then(() => {
-    // Efek teksnya berubah pas berhasil di-copy
-    const btn = document.querySelector('.btn-copy-dana span');
-    btn.innerText = "✅ Tersalin!";
+function copyNomorDana(nomor, element) {
+  // Langsung nyalin nomor yang dilempar dari tombol
+  navigator.clipboard.writeText(nomor).then(() => {
+    // Cari tag span di dalam tombol yang lagi diklik aja (pake 'element')
+    const btnSpan = element.querySelector('span');
+    btnSpan.innerText = "✓ Tersalin!";
     
-    // Balikin teksnya jadi 'Copy' lagi setelah 2 detik
+    // Balikin teksnya jadi 'Salin' lagi setelah 2 detik
     setTimeout(() => {
-      btn.innerText = "Salin";
+      btnSpan.innerText = "Salin";
     }, 2000);
   }).catch(err => {
     console.error('Gagal menyalin text: ', err);
